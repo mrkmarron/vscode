@@ -762,17 +762,22 @@ export class StepBackAction extends AbstractDebugAction {
 			thread = this.debugService.getViewModel().focusedThread;
 		}
 
-		if(!thread) {
+		if (!thread) {
 			return TPromise.as(null);
 		}
 		else {
 			return thread.stepBack().then((response) => {
-				if(response.body === undefined) {
+				if (response.body === undefined) {
 					return TPromise.as(null);
 				}
 				else {
 					const ttdConfig = JSON.parse(response.body);
-					return this.debugService.startDebugging(undefined, ttdConfig);
+					if (!ttdConfig.launch) {
+						return TPromise.as(null);
+					}
+					else {
+						return this.debugService.startDebugging(undefined, ttdConfig.config);
+					}
 				}
 			});
 		}
@@ -798,12 +803,12 @@ export class ReverseContinueAction extends AbstractDebugAction {
 			thread = this.debugService.getViewModel().focusedThread;
 		}
 
-		if(!thread) {
+		if (!thread) {
 			return TPromise.as(null);
 		}
 		else {
 			return thread.reverseContinue().then((response) => {
-				if(response.body === undefined) {
+				if (response.body === undefined) {
 					return TPromise.as(null);
 				}
 				else {
